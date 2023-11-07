@@ -12,7 +12,7 @@ on:
 # 2. Change these variables for your configuration:
 env:
   AZURE_WEBAPP_NAME: wapp-ky7iffr6ffenm    # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: 'dev-angular-project'      # set this to the path to your web app project, defaults to the repository root
+  AZURE_WEBAPP_PACKAGE_PATH: 'dev-angular-project'  # set this to the path to your web app project, relative to the repository root
   NODE_VERSION: '16.x'                # set this to the node version to use
 
 jobs:
@@ -26,6 +26,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version:  ${{ env.NODE_VERSION }}
+
+      - name: Change working directory
+        run: cd ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
       - name: npm install, build, and test
         run: |
