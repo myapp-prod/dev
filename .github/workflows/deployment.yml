@@ -1,23 +1,19 @@
 name: Deploy Node.js to Azure Web App
 
 on:
-  [push]
+  workflow_dispatch:
+permissions:
+      id-token: write
+      contents: read
 
-# CONFIGURATION
-# For help, go to https://github.com/Azure/Actions
-#
-# 1. Set up the following secrets in your repository:
-#   AZURE_WEBAPP_PUBLISH_PROFILE
-#
-# 2. Change these variables for your configuration:
 env:
-  AZURE_WEBAPP_NAME: wapp-ky7iffr6ffenm    # set this to your application's name
+  AZURE_WEBAPP_NAME: angular-app-dev1232    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: dev-angular-project # set this to the path to your web app project, relative to the repository root
-  NODE_VERSION: '16.x'                # set this to the node version to use
+  NODE_VERSION: '14'                # set this to the node version to use
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +21,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version:  ${{ env.NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Change working directory
         run: cd ${{ github.workspace }}
@@ -33,7 +29,7 @@ jobs:
       - name: npm install, build, and test
         run: |
           cd ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          npm install
+          npm install -g npm@latest
           npm run build --if-present
           # npm run test --if-present
 
@@ -47,15 +43,14 @@ jobs:
           path: release.zip
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     environment:
-      name: 'production'
+      name: 'dev'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Azure Login
-        uses: azure/login@v1
+      - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
