@@ -1,0 +1,22 @@
+name: AzureLoginSample
+
+on:
+  push:
+    branches:
+      - main  # Adjust the branch name as needed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in with Azure
+        uses: azure/login@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          enable-AzPSSession: false
+          environment: azurecloud
+          allow-no-subscriptions: false
+          audience: api://AzureADTokenExchange
+          auth-type: SERVICE_PRINCIPAL
+          client-id: '${{ secrets.SP_CLIENT_ID }}'  # Add your service principal client ID here
+          tenant-id: '${{ secrets.SP_TENANT_ID }}'  # Add your service principal tenant ID here
